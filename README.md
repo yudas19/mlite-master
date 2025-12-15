@@ -33,46 +33,6 @@ Konfigurasi PHP harus memiliki ekstensi berikut:
 Pemasangan
 ----------
 
-### Pemasangan menggunakan composer.
-1. Install composer di server/PC dan jalankan perintah composer untuk pemasangan paket utama dan independensi
-
-```
-$ composer create-project basoro/mlite
-```
-
-2. Buat folder `uploads`, `tmp/` dan `admin/tmp`. Beberapa server mungkin memerlukan izin tambahan `chmod 777` untuk direktori dan file tersebut.
-
-3. Sesuaikan pengaturan di config.php
-
-4. Buat database baru di MySQL/MariaDB dan import file `mlite_db.sql`
-
-5. Buka browser Anda dan navigasikan ke alamat tempat file mLITE berada.
-
-6. Silahkan login dengan Username: admin dan Password: admin
-
-### Pemasangan Manual
-1. Unduh versi terbaru [mLITE] (https://github.com/basoro/mlite).
-
-2. Ekstrak semua file dari paket terkompresi dan kemudian transfer ke direktori lokal atau server. Biasanya, file diunggah ke `www`,` htdocs` atau `public_html`.
-
-3. Install composer di server/PC dan jalankan perintah composer untuk pemasangan independensi
-```
-$ composer install
-```
-
-4. Buat folder `uploads`, `tmp/` dan `admin/tmp`. Beberapa server mungkin memerlukan izin tambahan `chmod 777` untuk direktori dan file tersebut.
-
-5. Sesuaikan pengaturan di config.php
-
-6. Buat database baru di MySQL/MariaDB dan import file `mlite_db.sql` (tambahkan sql-mode = '' pada my.cnf atau jalankan perintah berikut)
-
-```
-$ sed -i "/user=mysql/a sql-mode = ''" /etc/my.cnf
-```
-
-7. Buka browser Anda dan navigasikan ke alamat tempat file mLITE berada.
-
-8. Silahkan login dengan Username: admin dan Password: admin
 
 ### Pemasangan menggunakan docker.
 1. Download file release terbaru [mLITE] atau lakukan git clone.
@@ -80,16 +40,40 @@ $ sed -i "/user=mysql/a sql-mode = ''" /etc/my.cnf
 ```
 $ git clone https://github.com/basoro/mlite.git
 ```
-Sesuaikan port di bagian Nginx Service dan MySQL Service dari default ke port yang anda inginkan (atau biarkan defautl saja). 
+Sesuaikan port di bagian Nginx Service dan MySQL Service file yml dari default ke port yang anda inginkan (atau biarkan defautl saja). 
+saya sendiri mengubahnya menjadi
 
-2. Jalankan perintah docker-compose
+  nginx:
+    build:
+      context: ./nginx
+      dockerfile: Dockerfile
+    container_name: mlite_nginx
+    ports:
+      - "8081:80"
+      - "8443:443"
+      - "8080:8080"
+
+2. Jalankan perintah docker-compose -> versi terbaru tidak pakai - "docker compose"
 ```
-$ cd mlite/docker && docker-compose build && docker-compose up -d
-```
+masuk ke folder docker
+cd docker
+lakukan
+docker compose build
+docker compose up -d
 
-3. Buka browser Anda dan navigasikan ke alamat URL_ADDRESS:8088.
+di file config diubah menjadi
+define('DB_HOST', 'mysql');
+define('DB_PORT', '3306');
+define('DB_USER', 'root');
+define('DB_PASS', '');
+define('DB_NAME', 'mlite');
+// URL Webapps
+define('WEBAPPS_URL', 'http://mlite.loc/uploads'); // Sesuaikan http://mlite.loc dengan domain atau IP Address server
+define('WEBAPPS_PATH', BASE_DIR . '/uploads');
 
-4. Silahkan login dengan Username: admin dan Password: admin
+
+3. Buka browser dan navigasikan ke alamat [http://127.0.0.1:8081]
+4. login dengan Username: admin dan Password: admin
 
 
 ## Catatan:
